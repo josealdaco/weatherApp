@@ -1,0 +1,126 @@
+<html>
+        <head>
+                <title>WEATHER API</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+        </head>
+
+        <body>
+            <!-- Just an image -->
+            <nav class="navbar navbar-light bg-light mx-auto">
+                  <h1 class="text-center" style="text-align: center;">Welcome to the weather API</h1>
+                  <input  id = "zipcode"type="text" style="float: right" placeholder="ZIPCODE">
+                  <input type="submit" onclick="zipCode();">
+
+            </nav>
+
+                    <div class="container-fluid"
+                    <div  class = "container" style="display:flex;text-align: center;">
+                        <p class="" id="WeatherTimeHour"  style="font-size:250%; width: 200px;"></p>
+                        <p class="" id="WeatherTimeMinute"  style="font-size:250%; width: 200px;"></p>
+                    </div>
+                        <div class = "container-md">
+                            <input  id = "cityvalue" type="hidden" value="{{city}}">
+                            <input  id = "temperaturevalue" type="hidden" value="Temperature:{{temperature}}">
+                            <input  id = "discriptionvalue" type="hidden" value="How it feels: {{discription}}">
+                            <input  id = "windvalue" type="hidden" value=" Winds: {{wind}}">
+                                <h1  id = "citytitle"style="text-align: center">{{city}}<h1>
+                                <h5 id = "temperature">{{temperature}}</h5>
+                                <h5 id = "discription">{{discription}}</h5>
+                                <h5 id = "winds"> {{wind}}</h5>
+                        </div>
+                        <!-- Content here -->
+                            <form id="myForm">
+                            <input id = "commentInfo"type="text" placeholder="Comment your day here" style="width:100%">
+                            <input type="submit" id = "commentSubmit" onclick="commentFunction()">
+                            </form>
+                            <div id = "commentDiv">
+                            {% for comment in comments %}
+                                <div>
+                                    <p>{{comment.comment}}</p>
+                                    <p>{{comment.city}}</p>
+                                </div>
+                            {% endfor %}
+                            </div>
+                    </div>
+                    <!-- Optional JavaScript -->
+   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+   <script type="text/javascript">
+       var timeformat = new Intl.DateTimeFormat("en-US", {hour: "2-digit",minute: "2-digit"}).format
+       var hourformat = new Intl.DateTimeFormat("en-US", {hour: "2-digit"}).format
+       var minuteformat = new Intl.DateTimeFormat("en-US", {minute: "2-digit"}).format
+     function time() {
+  var date = new Date();
+  var s = date.getSeconds();
+  var m = date.getMinutes();
+  var h = date.getHours();
+ document.getElementById("WeatherTimeHour").innerHTML = hourformat(date)
+ document.getElementById("WeatherTimeMinute").innerHTML = minuteformat(date)
+  document.getElementById("WeatherTimeMinute").style.display = ( document.getElementById("WeatherTimeMinute").style.display == 'none' ? '' : 'none');
+}
+    setInterval(time, 1000);
+   </script>
+
+   <script type="text/javascript">
+       function zipCode(){
+           $.ajax({   // This was to switch between chats without reloading, will figure this out later. NOT PRIORITY
+                     url: window.location.pathname,  // chatroom/123456
+                     type: "GET",
+                     data:{
+                         'zipCodeBox': true,  // This is here because otherwise i GET AN HTML,
+                         'zipCode': document.getElementById("zipcode").value
+                     },
+                        success: function(response) {
+                        document.getElementById("citytitle").innerHTML = response['city']
+                        document.getElementById("temperature").innerHTML = "Temperature:" + response['temperature']
+                        document.getElementById("discription").innerHTML = "How it feels:" + response['discription']
+                        document.getElementById("winds").innerHTML = "Winds" + response['wind']
+
+
+
+       }
+   })
+}
+   </script>
+
+   <script type="text/javascript">
+       function commentFunction(){
+           $.ajax({   // This was to switch between chats without reloading, will figure this out later. NOT PRIORITY
+                     url: window.location.pathname,  // chatroom/123456
+                     type: "GET",
+                     data:{
+                         'CommentBox': true,  // This is here because otherwise i GET AN HTML,
+                         'Comment':document.getElementById("commentInfo").value,
+                         'city': document.getElementById("citytitle").innerHTML
+                     },
+                        success: function(response) {
+                            console.log(response)
+                            div = document.createElement('div')
+                            comment = document.createElement('p')
+                            city = document.createElement('p')
+                            comment.innerHTML = response['comment']
+                            city.innerHTML = response['city']
+                            div.appendChild(comment)
+                            div.appendChild(city)
+                            var currentDiv = document.getElementById("commentDiv")
+                            currentDiv.appendChild(div)
+                            //<div>
+                        //        <p>response[0]</p>
+                    //            <p>response[1]</p>
+                    //        </div>
+
+       }
+   })
+   document.getElementById("myForm").reset();
+
+}
+   </script>
+
+        </body>
+
+</html>
